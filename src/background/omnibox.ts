@@ -14,5 +14,5 @@ chrome.omnibox.onInputEntered.addListener(function (text) {
   const url = /https?:\/\//g.test(text)
     ? text
     : getMDNSearchURL(text)
-  chrome.tabs.create({ url })
+  chrome.tabs.update({ url })
 })

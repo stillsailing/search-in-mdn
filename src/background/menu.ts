@@ -3,7 +3,7 @@ import getMDNSearchURL from "../util/getMDNSearchURL"
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: 'search-in-mdn',
-    title: 'Search in MDN"',
+    title: 'Search in MDN',
     type: 'normal',
     contexts: ['selection'],
   })
