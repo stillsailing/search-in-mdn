@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Search in MDN",
+  "description": "增强右键菜单，选中内容即可 Search in MDN",
+  "version": "0.0.1",
+  "icons": {
+    "16": "icon/16.png",
+    "32": "icon/32.png",
+    "48": "icon/48.png",
+    "96": "icon/96.png",
+    "128": "icon/128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "omnibox": {
+    "keyword": "mdn"
+  },
+  "permissions": ["contextMenus"]
+}
