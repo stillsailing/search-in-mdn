@@ -16,6 +16,6 @@
   "omnibox": {
     "keyword": "mdn"
   },
-  "permissions": ["contextMenus", "storage"],
+  "permissions": ["contextMenus", "storage", "alarms"],
   "host_permissions": ["https://developer.mozilla.org/"]
 }

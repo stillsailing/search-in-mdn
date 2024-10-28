@@ -1,10 +1,8 @@
 const key = 'mdn_search_index'
 
-chrome.storage.local.get(key)
-
-const lang = {
-  zh: 'zh-CN',
-  en: 'en-US',
+interface IndexItem {
+  title: string
+  url: string
 }
 
 /**
@@ -14,7 +12,22 @@ async function updateSearchIndex() {
   const index = await fetch('https://developer.mozilla.org/zh-CN/search-index.json').then(
     (response) => response.json()
   )
-  chrome.storage.local.set({ [key]: index })
+  await chrome.storage.local.set({ [key]: index })
 }
 
-chrome.runtime.onInstalled.addListener(updateSearchIndex)
+chrome.alarms.onAlarm.addListener(updateSearchIndex)
+chrome.runtime.onInstalled.addListener(() => {
+  updateSearchIndex()
+  chrome.alarms.create('updateSearchIndex', {
+    periodInMinutes: 1440, // per day
+  })
+})
+
+export async function getSearchIndex(): Promise<IndexItem[]> {
+  const index = await chrome.storage.local.get()
+  if (index && index[key]) {
+    return index[key]
+  }
+  await updateSearchIndex()
+  return await chrome.storage.local.get()[key]
+}
