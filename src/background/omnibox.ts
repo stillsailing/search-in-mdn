@@ -20,11 +20,18 @@ chrome.omnibox.onInputChanged.addListener(async function (text, suggest) {
     suggest(
       result.map((index) => ({
         content: index.item.title,
-        description: `<match>${index.item.title}</match>  ➔  <url>${MDN_SITE_URL}${index.item.url}</url>`,
+        description: `${highlight(index.item.title, text)}  ➔  <url>${MDN_SITE_URL}${
+          index.item.url
+        }</url>`,
       }))
     )
   }
 })
+
+function highlight(text: string, keyword: string) {
+  const regex = new RegExp(`(${keyword})`, 'gi')
+  return text.replace(regex, '<match>$1</match>')
+}
 
 chrome.omnibox.onInputEntered.addListener((content) => {
   const item = lastSuggestions.find((item) => item.title === content)
