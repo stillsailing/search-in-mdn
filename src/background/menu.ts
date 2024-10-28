@@ -1,21 +1,68 @@
-import getMDNSearchURL from '../util/getMDNSearchURL'
+import { MDN_SITE_URL } from './contants'
 import search from './search'
 
-chrome.runtime.onInstalled.addListener(() => {
+const ExtensionMenuId = 'search-in-mdn'
+
+let subMenuIds = []
+async function setupSubMenu(selection: string) {
+  // remove all sub menu
+  subMenuIds.forEach((id) => {
+    chrome.contextMenus.remove(id)
+  })
+  subMenuIds = []
+
+  const result = await search(selection)
+  if (!result || result.length === 0) {
+    subMenuIds.push(
+      chrome.contextMenus.create({
+        parentId: ExtensionMenuId,
+        id: 'no-result',
+        title: '没有过滤到结果，直接在 MDN 中搜索',
+        type: 'normal',
+        contexts: ['selection'],
+      })
+    )
+    return
+  }
+
+  result.forEach((index) => {
+    const { title, url } = index.item
+    subMenuIds.push(
+      chrome.contextMenus.create({
+        parentId: ExtensionMenuId,
+        id: url,
+        title: title,
+        type: 'normal',
+        contexts: ['selection'],
+      })
+    )
+  })
+}
+
+function handleMenuClick(info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab) {
+  const index = tab!.index + 1
+  const menuItemId = String(info.menuItemId)
+  if (menuItemId === 'no-result') {
+    const selection = info.selectionText
+    chrome.tabs.create({
+      url: `${MDN_SITE_URL}/zh-CN/search?q=${selection}`,
+      index,
+    })
+  }
+
+  const url = `${MDN_SITE_URL}${menuItemId}`
+  chrome.tabs.create({ url, index })
+}
+
+chrome.runtime.onMessage.addListener(
+  (message) => message.type === 'textSelection' && setupSubMenu(message.selection)
+)
+chrome.runtime.onInstalled.addListener(() =>
   chrome.contextMenus.create({
-    id: 'search-in-mdn',
+    id: ExtensionMenuId,
     title: 'Search in MDN',
     type: 'normal',
     contexts: ['selection'],
   })
-})
-
-chrome.contextMenus.onClicked.addListener(async function (info, tab) {
-  const selection = info.selectionText
-  const result = await search(selection!)
-  console.log(result)
-
-  const newTabIndex = tab!.index + 1
-  const url = getMDNSearchURL(selection!)
-  chrome.tabs.create({ url, index: newTabIndex })
-})
+)
+chrome.contextMenus.onClicked.addListener(handleMenuClick)

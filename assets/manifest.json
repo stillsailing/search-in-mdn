@@ -13,9 +13,15 @@
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
   "omnibox": {
     "keyword": "mdn"
   },
   "permissions": ["contextMenus", "storage", "alarms"],
-  "host_permissions": ["https://developer.mozilla.org/"]
+  "host_permissions": ["https://*/*", "https://*/", "http://*/*", "http://*/"]
 }

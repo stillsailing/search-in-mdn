@@ -2,18 +2,19 @@
  * @type {import('vite').UserConfig}
  */
 export default {
-  publicDir: "assets",
+  publicDir: 'assets',
   build: {
-    target: "es2015",
-    outDir: "output/build",
+    target: 'es2015',
+    outDir: 'output/build',
     lib: {
       entry: {
-        background: "src/background/index.ts",
+        background: 'src/background/index.ts',
+        content: 'src/content/index.ts',
       },
-      name: "search-in-mdn",
-      formats: ["cjs"],
+      name: 'search-in-mdn',
+      formats: ['cjs'],
       fileName: (_, entryName) => `${entryName}.js`,
     },
     manifest: false,
   },
-};
+}
