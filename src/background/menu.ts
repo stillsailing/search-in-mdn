@@ -4,12 +4,15 @@ import search from './search'
 const ExtensionMenuId = 'search-in-mdn'
 
 let subMenuIds = []
-async function setupSubMenu(selection: string) {
-  // remove all sub menu
+function clearSubMenu() {
   subMenuIds.forEach((id) => {
     chrome.contextMenus.remove(id)
   })
   subMenuIds = []
+}
+
+async function setupSubMenu(selection: string) {
+  clearSubMenu()
 
   const result = await search(selection)
   if (!result || result.length === 0) {
@@ -66,4 +69,7 @@ chrome.runtime.onInstalled.addListener(() =>
     contexts: ['selection'],
   })
 )
-chrome.contextMenus.onClicked.addListener(handleMenuClick)
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  handleMenuClick(info, tab)
+  clearSubMenu()
+})

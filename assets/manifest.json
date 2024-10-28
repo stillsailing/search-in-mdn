@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Search in MDN",
-  "description": "增强右键菜单，选中内容即可 Search in MDN；增强地址栏输入框，`mdn <keyword>` 直接在 MDN 中搜索结果；",
+  "description": "增强右键菜单，选中内容即可 Search in MDN；增强地址栏输入框 mdn <keyword> 可直接在 MDN 中搜索结果；",
   "version": "0.0.1",
   "icons": {
     "16": "icon/16.png",
