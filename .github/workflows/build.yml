@@ -4,8 +4,43 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'package.json' # 只在 package.json 文件发生变化时触发
 
 jobs:
+
+  check-version-change:
+    runs-on: ubuntu-latest
+    outputs:
+      version-changed: ${{ steps.check-version.outputs.version-changed }} # 输出版本是否变化
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get previous version
+        id: get-previous-version
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const request = require('@actions/request');
+            const { owner, repo } = context.repo;
+            const response = await request.get(`https://api.github.com/repos/${owner}/${repo}/commits?per_page=1`);
+            const data = JSON.parse(response.data);
+            const previousSha = data[0].sha;
+            const previousPackageJson = await request.get(`https://raw.githubusercontent.com/${owner}/${repo}/${previousSha}/package.json`);
+            const previousVersion = JSON.parse(previousPackageJson.data).version;
+            return previousVersion;
+      - name: Get current version
+        run: echo "CURRENT_VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+      - name: Compare versions
+        id: check-version
+        run: |
+          echo "Previous version: ${{ steps.get-previous-version.outputs.result }}"
+          echo "Current version: ${{ env.CURRENT_VERSION }}"
+          if [[ "${{ steps.get-previous-version.outputs.result }}" != "${{ env.CURRENT_VERSION }}" ]]; then
+            echo "::set-output name=version-changed::true"
+          else
+            echo "::set-output name=version-changed::false"
+          fi
+
   build:
     runs-on: ubuntu-latest # 选择运行环境
 
@@ -32,5 +67,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: build-artifacts # 构建物名称
+          name: search-in-mdn # 构建物名称
           path: output/build # 构建物路径，根据项目修改
