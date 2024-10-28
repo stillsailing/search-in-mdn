@@ -1,5 +1,6 @@
 import Fuse from 'fuse.js'
 import { getSearchIndex } from './search-index'
+import { SEARCH_LIMIT } from './contants'
 
 export default async function search(keyword: string) {
   const index = await getSearchIndex()
@@ -9,5 +10,5 @@ export default async function search(keyword: string) {
   const fuse = new Fuse(index, {
     keys: ['title', 'url'],
   })
-  return fuse.search(keyword, { limit: 10 })
+  return fuse.search(keyword, { limit: SEARCH_LIMIT })
 }

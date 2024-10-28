@@ -1,25 +1,33 @@
 import { MDN_SITE_URL } from './contants'
 import search from './search'
 
+interface Suggestion {
+  title: string
+  url: string
+}
+
+let lastSuggestions: Suggestion[] = []
 chrome.omnibox.onInputChanged.addListener(async function (text, suggest) {
+  if (text) {
+    chrome.omnibox.setDefaultSuggestion({
+      description: text,
+    })
+  }
+
   const result = await search(text)
-  const suggestions = [
-    {
-      content: `${MDN_SITE_URL}/zh-CN/search?q=${text}`,
-      description: 'Search in MDN',
-    },
-  ]
   if (result && result.length > 0) {
-    suggestions.push(
-      ...result.map((index) => ({
-        content: `${MDN_SITE_URL}${index.item.url}`,
-        description: `${index.item.title}  ➔  ${MDN_SITE_URL}${index.item.url}`,
+    lastSuggestions = result.map((s) => ({ title: s.item.title, url: s.item.url }))
+    suggest(
+      result.map((index) => ({
+        content: index.item.title,
+        description: `<match>${index.item.title}</match>  ➔  <url>${MDN_SITE_URL}${index.item.url}</url>`,
       }))
     )
   }
-  suggest(suggestions)
 })
 
-chrome.omnibox.onInputEntered.addListener(function (text) {
-  chrome.tabs.update({ url: text })
+chrome.omnibox.onInputEntered.addListener((content) => {
+  const item = lastSuggestions.find((item) => item.title === content)
+  let url = item ? `${MDN_SITE_URL}${item.url}` : `${MDN_SITE_URL}/zh-CN/search?q=${content}`
+  chrome.tabs.update({ url })
 })
