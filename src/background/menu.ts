@@ -48,6 +48,7 @@ function handleMenuClick(info: chrome.contextMenus.OnClickData, tab: chrome.tabs
       url: `${MDN_SITE_URL}/zh-CN/search?q=${selection}`,
       index,
     })
+    return
   }
 
   const url = `${MDN_SITE_URL}${menuItemId}`
