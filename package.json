@@ -2,10 +2,10 @@
   "name": "Search in MDN",
   "description": "快捷查找 MDN 文档",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "NODE_ENV=development vite build",
     "build": "vite build"
   },
   "devDependencies": {
