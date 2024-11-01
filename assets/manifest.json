@@ -22,6 +22,6 @@
   "omnibox": {
     "keyword": "mdn"
   },
-  "permissions": ["contextMenus", "alarms"],
+  "permissions": ["contextMenus", "alarms", "storage"],
   "host_permissions": ["https://*/*", "https://*/", "http://*/*", "http://*/"]
 }
