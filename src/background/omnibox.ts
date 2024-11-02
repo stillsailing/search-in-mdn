@@ -18,19 +18,48 @@ chrome.omnibox.onInputChanged.addListener(async function (text, suggest) {
   if (result && result.length > 0) {
     lastSuggestions = result.map((s) => ({ title: s.item.title, url: s.item.url }))
     suggest(
-      result.map((index) => ({
-        content: index.item.title,
-        description: `${highlight(index.item.title, text)}  ➔  <url>${MDN_SITE_URL}${
-          index.item.url
-        }</url>`,
-      }))
+      result.map((index) => {
+        const { title, url } = index.item
+        return {
+          content: title,
+          description: `${highlight(title, text)}  ➔  <url>${MDN_SITE_URL}${url}</url>`,
+        }
+      })
     )
   }
 })
 
+/**
+ * https://stackoverflow.com/questions/1091945/what-characters-do-i-need-to-escape-in-xml-documents/1091953
+ */
+function escaping(text: string) {
+  const map = {
+    '"': '&quot;',
+    "'": '&apos;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '&': '&amp;',
+  }
+  let escaped = ''
+  for (let char of text) {
+    escaped += map[char] ? map[char] : char
+  }
+  return escaped
+}
+
 function highlight(text: string, keyword: string) {
-  const regex = new RegExp(`(${keyword})`, 'gi')
-  return text.replace(regex, '<match>$1</match>')
+  const index = text.indexOf(keyword)
+  if (index === -1) {
+    return escaping(text)
+  }
+  const escapedText = escaping(text)
+  const escapedKeyword = escaping(keyword)
+  const escapedIndex = escapedText.indexOf(escapedKeyword)
+  const result =
+    escapedText.slice(0, escapedIndex) +
+    `<match>${escapedKeyword}</match>` +
+    escapedText.slice(escapedIndex + escapedKeyword.length)
+  return result
 }
 
 chrome.omnibox.onInputEntered.addListener((content) => {
