@@ -7,7 +7,7 @@ function clearSubMenu() {
   chrome.contextMenus.removeAll()
   chrome.contextMenus.create({
     id: ExtensionMenuId,
-    title: 'Search in MDN',
+    title: chrome.runtime.getManifest().name,
     type: 'normal',
     contexts: ['selection'],
   })
@@ -21,7 +21,7 @@ async function setupSubMenu(selection: string) {
     chrome.contextMenus.create({
       parentId: ExtensionMenuId,
       id: 'no-result',
-      title: '没有过滤到结果，直接在 MDN 中搜索',
+      title: chrome.i18n.getMessage('no_result'),
       type: 'normal',
       contexts: ['selection'],
     })
