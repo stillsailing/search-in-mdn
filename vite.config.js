@@ -14,7 +14,6 @@ export default {
     lib: {
       entry: {
         background: 'src/background/index.ts',
-        content: 'src/content/index.ts',
       },
       name: 'search-in-mdn',
       formats: ['cjs'],

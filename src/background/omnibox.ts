@@ -63,9 +63,15 @@ function highlight(text: string, keyword: string) {
   return result
 }
 
-chrome.omnibox.onInputEntered.addListener(async (content) => {
-  const item = lastSuggestions.find((item) => item.title === content)
+async function updateTab(keyword: string) {
+  const suggestion = lastSuggestions.find((item) => item.title === keyword)
   const lang = await getLang()
-  let url = item ? `${MDN_SITE_URL}${item.url}` : `${MDN_SITE_URL}/${lang}/search?q=${content}`
+  let url = suggestion
+    ? `${MDN_SITE_URL}${suggestion.url}`
+    : `${MDN_SITE_URL}/${lang}/search?q=${keyword}`
   chrome.tabs.update({ url })
+}
+
+chrome.omnibox.onInputEntered.addListener((content) => {
+  updateTab(content)
 })
