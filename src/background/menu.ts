@@ -65,3 +65,22 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   handleMenuClick(info, tab)
   clearSubMenu()
 })
+
+chrome.tabs.onActivated.addListener((info) => {
+  chrome.scripting.executeScript({
+    target: { tabId: info.tabId },
+    func: () => {
+      function push() {
+        const selection = window.getSelection().toString()
+        if (selection) {
+          chrome.runtime.sendMessage({ type: 'textSelection', selection })
+        }
+      }
+      document.addEventListener('mouseup', push)
+      document.addEventListener(
+        'visibilitychange',
+        () => document.visibilityState === 'visible' && push()
+      )
+    },
+  })
+})
