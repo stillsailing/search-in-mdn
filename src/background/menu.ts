@@ -1,4 +1,5 @@
-import { MDN_SITE_URL } from './contants'
+import getLang from '@/util/getLang'
+import { MDN_SITE_URL } from '@/contants'
 import search from './search'
 
 const ExtensionMenuId = 'search-in-mdn'
@@ -40,13 +41,14 @@ async function setupSubMenu(selection: string) {
   })
 }
 
-function handleMenuClick(info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab) {
+async function handleMenuClick(info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab) {
   const index = tab!.index + 1
   const menuItemId = String(info.menuItemId)
   if (!menuItemId || menuItemId === 'no-result') {
     const selection = info.selectionText
+    const lang = await getLang()
     chrome.tabs.create({
-      url: `${MDN_SITE_URL}/zh-CN/search?q=${selection}`,
+      url: `${MDN_SITE_URL}/${lang}/search?q=${selection}`,
       index,
     })
     return

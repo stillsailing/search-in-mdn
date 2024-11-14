@@ -1,6 +1,9 @@
+import getLang from "@/util/getLang"
+import { MDN_SITE_URL } from "@/contants"
+
 const prefix = 'mdn_search_index_'
-function getKey() {
-  const lang = chrome.i18n.getUILanguage()
+async function getKey() {
+  const lang = await getLang()
   return `${prefix}${lang}`
 }
 
@@ -14,13 +17,15 @@ interface IndexItem {
  */
 async function updateSearchIndex() {
   const map = {
-    'zh_CN': 'https://developer.mozilla.org/zh-CN/search-index.json',
-    'en': 'https://developer.mozilla.org/en-US/search-index.json',
+    'zh-CN': `${MDN_SITE_URL}/zh-CN/search-index.json`,
+    'en': `${MDN_SITE_URL}/en-US/search-index.json`,
   }
-  const index = await fetch(map[chrome.i18n.getUILanguage()]).then(
+  const lang = await getLang()
+  const index = await fetch(map[lang]).then(
     (response) => response.json()
   )
-  await chrome.storage.local.set({ [getKey()]: index })
+  const key = await getKey()
+  await chrome.storage.local.set({ [key]: index })
 }
 
 chrome.alarms.onAlarm.addListener(updateSearchIndex)
@@ -33,7 +38,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 export async function getSearchIndex(): Promise<IndexItem[]> {
   const index = await chrome.storage.local.get()
-  const key = getKey()
+  const key = await getKey()
   if (index && index[key]) {
     return index[key]
   }
