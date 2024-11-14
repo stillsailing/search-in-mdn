@@ -1,3 +1,5 @@
+import path from 'path'
+
 const dev = process.env.NODE_ENV === 'development'
 
 /**
@@ -21,5 +23,10 @@ export default {
     manifest: false,
     sourcemap: dev,
     watch: dev,
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
   },
 }

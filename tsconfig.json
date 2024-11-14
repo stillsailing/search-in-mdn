@@ -3,6 +3,9 @@
     "target": "ESNext",
     "moduleResolution": "Node",
     "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": [".output"]

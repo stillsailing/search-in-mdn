@@ -1,4 +1,5 @@
-import { MDN_SITE_URL } from './contants'
+import { MDN_SITE_URL } from '@/contants'
+import getLang from '@/util/getLang'
 import search from './search'
 
 interface Suggestion {
@@ -62,8 +63,9 @@ function highlight(text: string, keyword: string) {
   return result
 }
 
-chrome.omnibox.onInputEntered.addListener((content) => {
+chrome.omnibox.onInputEntered.addListener(async (content) => {
   const item = lastSuggestions.find((item) => item.title === content)
-  let url = item ? `${MDN_SITE_URL}${item.url}` : `${MDN_SITE_URL}/zh-CN/search?q=${content}`
+  const lang = await getLang()
+  let url = item ? `${MDN_SITE_URL}${item.url}` : `${MDN_SITE_URL}/${lang}/search?q=${content}`
   chrome.tabs.update({ url })
 })
